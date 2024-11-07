@@ -2,7 +2,7 @@
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { AdventOfCodeBoardStack } from "../lib/advent-of-code-board-stack";
-import { Environment } from "aws-cdk-lib/aws-appconfig";
+import { AdventOfCodeSslStack } from "../lib/advent-of-code-ssl-stack";
 
 if (!process.env.AOC_LEADERBOARD_ID) {
   throw new Error("AOC_LEADERBOARD_ID is a required environment variable");
@@ -12,16 +12,25 @@ if (!process.env.AOC_EVENT_YEAR) {
   throw new Error("AOC_EVENT_YEAR is a required environment variable");
 }
 
+if (!process.env.DOMAIN) {
+  throw new Error("DOMAIN is a required environment variable");
+}
+
+const domainName = process.env.DOMAIN;
+
 const app = new cdk.App();
-new AdventOfCodeBoardStack(app, "AdventOfCodeBoardStack", {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+
+const sslStack = new AdventOfCodeSslStack(app, "AdventOfCodeSslStack", {
+  env: {
+    region: "us-east-1",
+  },
+  domainName,
+});
+
+const boardStack = new AdventOfCodeBoardStack(app, "AdventOfCodeBoardStack", {
+  env: {
+    region: "eu-west-2",
+  },
+  domainName,
+  webCertificate: sslStack.webCertificate,
 });

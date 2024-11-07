@@ -11,10 +11,19 @@ import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as path from "node:path";
 import * as logs from "aws-cdk-lib/aws-logs";
-import * as s3_deployment from "aws-cdk-lib/aws-s3-deployment";
+import * as cm from "aws-cdk-lib/aws-certificatemanager";
+
+interface AdventOfCodeBoardStackProps extends cdk.StackProps {
+  domainName: string;
+  webCertificate: cm.Certificate;
+}
 
 export class AdventOfCodeBoardStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: AdventOfCodeBoardStackProps,
+  ) {
     super(scope, id, props);
 
     const dataBucket = this.createBucket("DataBucket");
@@ -64,7 +73,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
       },
     );
 
-    this.setupDistribution(webBucket, "advent-of-code.teamkraken.dev");
+    this.setupDistribution(webBucket, props.domainName, props.webCertificate);
   }
 
   private createBucket(id: string): s3.Bucket {
@@ -75,7 +84,11 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     });
   }
 
-  private setupDistribution(bucket: s3.Bucket, domainName: string) {
+  private setupDistribution(
+    bucket: s3.Bucket,
+    domainName: string,
+    certificate: cm.Certificate,
+  ) {
     return new cloudfront.Distribution(this, "WebDistribution", {
       defaultRootObject: "index.html",
       defaultBehavior: {
@@ -84,6 +97,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       domainNames: [domainName],
+      certificate: certificate,
     });
   }
 

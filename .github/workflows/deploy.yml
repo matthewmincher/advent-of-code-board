@@ -14,6 +14,7 @@ jobs:
     env:
       AOC_EVENT_YEAR: ${{ vars.AOC_EVENT_YEAR }}
       AOC_LEADERBOARD_ID: ${{ vars.AOC_LEADERBOARD_ID }}
+      DOMAIN: ${{ vars.DOMAIN }}
     steps:
       - name: Check out
         uses: actions/checkout@v2

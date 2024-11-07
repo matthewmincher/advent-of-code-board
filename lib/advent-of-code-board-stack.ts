@@ -64,11 +64,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
       },
     );
 
-    this.setupDistribution(
-      webBucket,
-      projectRoot,
-      "advent-of-code.teamkraken.dev",
-    );
+    this.setupDistribution(webBucket, "advent-of-code.teamkraken.dev");
   }
 
   private createBucket(id: string): s3.Bucket {

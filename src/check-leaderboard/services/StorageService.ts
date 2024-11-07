@@ -16,7 +16,7 @@ export default class StorageService {
   }
 
   public async storeLeaderboard(leaderboard: Leaderboard) {
-    const fileKey = `${leaderboard.event}_${leaderboard.owner_id}_${format(new Date(), "D-h-m")}`;
+    const fileKey = `${leaderboard.event}_${leaderboard.owner_id}_${format(new Date(), "d-h-m")}`;
 
     const params: PutObjectCommandInput = {
       Body: JSON.stringify(leaderboard),

@@ -11,6 +11,9 @@ jobs:
   aws_cdk:
     runs-on: ubuntu-latest
     environment: Production
+    env:
+      AOC_EVENT_YEAR: ${{ vars.AOC_EVENT_YEAR }}
+      AOC_LEADERBOARD_ID: ${{ vars.AOC_LEADERBOARD_ID }}
     steps:
       - name: Check out
         uses: actions/checkout@v2

@@ -32,11 +32,9 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     const projectRoot = path.resolve(__dirname, "../");
     const lambdaRoot = path.resolve(__dirname, "../src");
 
-    const secret = secrets.Secret.fromSecretNameV2(
-      this,
-      "aoc-secrets",
-      "aoc/checker",
-    );
+    const secret = new secrets.Secret(this, "aoc-secrets", {
+      secretName: "aoc/leaderboardchecker",
+    });
 
     const leaderboardCheckRole = new iam.Role(this, "LeaderboardCheckerRole", {
       assumedBy: new iam.ServicePrincipal("scheduler.amazonaws.com"),
@@ -47,7 +45,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
       lambdaRoot,
       webBucket,
       dataBucket,
-      secret.secretName,
+      secret,
     );
 
     secret.grantRead(leaderboardChecker);
@@ -106,7 +104,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     lambdaRoot: string,
     webBucket: s3.Bucket,
     dataBucket: s3.Bucket,
-    secretName: string,
+    secret: secrets.Secret,
   ): nodejs.NodejsFunction {
     const secretsLayerArn =
       "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11";
@@ -128,7 +126,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
       environment: {
         AOC_LEADERBOARD_ID: process.env.AOC_LEADERBOARD_ID!,
         AOC_EVENT_YEAR: process.env.AOC_EVENT_YEAR!,
-        SECRET_NAME: secretName,
+        SECRET_ARN: secret.secretArn,
         S3_REGION: this.region,
         S3_WEB_BUCKET_NAME: webBucket.bucketName,
         S3_DATA_BUCKET_NAME: dataBucket.bucketName,

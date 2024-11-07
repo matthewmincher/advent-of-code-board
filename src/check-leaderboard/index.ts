@@ -10,7 +10,7 @@ const storageService = new StorageService();
 const widgetService = new WidgetService(
   path.join(__dirname, "assets", "widget.html"),
 );
-const secretsService = new SecretsService(process.env.SECRET_NAME);
+const secretsService = new SecretsService(process.env.SECRET_ARN);
 
 export const handler: Handler = async (event, context) => {
   const eventYear = process.env.AOC_EVENT_YEAR;

@@ -12,20 +12,21 @@ import {
 
 export default class SecretsService {
   private readonly client: SecretsManagerClient;
-  private readonly secretName: string;
+  private readonly secretArn: string;
 
-  constructor(secretName: string) {
+  constructor(secretArn: string) {
     this.client = new SecretsManagerClient();
+    this.secretArn = secretArn;
   }
 
   public async getSessionId(): Promise<string> {
     const getSecretsCommand = new GetSecretValueCommand({
-      SecretId: this.secretName,
+      SecretId: this.secretArn,
     });
     const secretValue = await this.client.send(getSecretsCommand);
 
     if (!secretValue.SecretString) {
-      throw new Error(`Missing secret value for ${this.secretName}`);
+      throw new Error(`Missing secret value for ${this.secretArn}`);
     }
 
     const secrets = JSON.parse(secretValue.SecretString);

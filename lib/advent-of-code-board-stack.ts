@@ -79,21 +79,8 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     });
   }
 
-  private setupDistribution(
-    bucket: s3.Bucket,
-    projectRoot: string,
-    domainName: string,
-  ) {
-    const deployment = new s3_deployment.BucketDeployment(
-      this,
-      "WebDeployment",
-      {
-        destinationBucket: bucket,
-        sources: [s3_deployment.Source.asset(path.join(projectRoot, "public"))],
-      },
-    );
-
-    const distribution = new cloudfront.Distribution(this, "WebDistribution", {
+  private setupDistribution(bucket: s3.Bucket, domainName: string) {
+    return new cloudfront.Distribution(this, "WebDistribution", {
       defaultRootObject: "index.html",
       defaultBehavior: {
         origin:

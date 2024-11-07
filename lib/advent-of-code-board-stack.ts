@@ -133,8 +133,24 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
         S3_WEB_BUCKET_NAME: webBucket.bucketName,
         S3_DATA_BUCKET_NAME: dataBucket.bucketName,
       },
+      retryAttempts: 0,
       timeout: cdk.Duration.seconds(30),
       logRetention: logs.RetentionDays.ONE_WEEK,
+      bundling: {
+        commandHooks: {
+          beforeBundling(inputDir: string, outputDir: string): string[] {
+            return [];
+          },
+          afterBundling(inputDir: string, outputDir: string): string[] {
+            return [
+              `cp -R ${inputDir}/src/check-leaderboard/assets ${outputDir}/assets`,
+            ];
+          },
+          beforeInstall(inputDir: string, outputDir: string): string[] {
+            return [];
+          },
+        },
+      },
     });
   }
 }

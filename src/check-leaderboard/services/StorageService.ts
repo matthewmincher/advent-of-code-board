@@ -35,6 +35,7 @@ export default class StorageService {
       Body: html,
       Bucket: process.env.S3_WEB_BUCKET_NAME,
       Key: `index.html`,
+      ContentType: "text/html",
     };
 
     console.log(`Putting rendered widget to index.html`);

@@ -25,6 +25,7 @@ const sslStack = new AdventOfCodeSslStack(app, "AdventOfCodeSslStack", {
     region: "us-east-1",
   },
   domainName,
+  crossRegionReferences: true,
 });
 
 const boardStack = new AdventOfCodeBoardStack(app, "AdventOfCodeBoardStack", {
@@ -33,4 +34,5 @@ const boardStack = new AdventOfCodeBoardStack(app, "AdventOfCodeBoardStack", {
   },
   domainName,
   webCertificate: sslStack.webCertificate,
+  crossRegionReferences: true,
 });

@@ -1,0 +1,36 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  aws_cdk:
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install
+      - name: Install AWS CDK
+        run: npm i -g aws-cdk
+      - name: Configure credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: "eu-west-2"
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      - name: Synth
+        run: cdk synth
+      - name: Diff
+        run: cdk diff
+      - name: Deploy
+        run: cdk deploy --all --require-approval never

@@ -3,12 +3,14 @@ import StorageService from "./services/StorageService";
 import WidgetService from "./services/WidgetService";
 import { Handler } from "aws-lambda";
 import * as path from "node:path";
+import SecretsService from "./services/SecretsService";
 
 const leaderboardService = new AdventOfCodeLeaderboardService();
 const storageService = new StorageService();
 const widgetService = new WidgetService(
   path.join(__dirname, "assets", "widget.html"),
 );
+const secretsService = new SecretsService(process.env.SECRET_NAME);
 
 export const handler: Handler = async (event, context) => {
   const eventYear = process.env.AOC_EVENT_YEAR;
@@ -16,7 +18,10 @@ export const handler: Handler = async (event, context) => {
 
   console.log(`Invoked for ${eventYear}/${leaderboardId}`);
 
+  const secretToken = await secretsService.getSessionId();
+
   const leaderboard = await leaderboardService.getLeaderboard(
+    secretToken,
     eventYear,
     leaderboardId,
   );

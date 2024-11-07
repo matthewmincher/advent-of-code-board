@@ -1,19 +1,14 @@
 import { Leaderboard } from "../types/AdventOfCodeLeaderboard";
 
 export default class AdventOfCodeLeaderboardService {
-  private readonly sessionId: string;
-
-  constructor() {
-    this.sessionId = process.env.AOC_SESSION_ID;
-  }
-
   async getLeaderboard(
+    sessionId: string,
     eventYear: string,
     boardId: string,
   ): Promise<Leaderboard> {
     const opts: RequestInit = {
       headers: {
-        cookie: `session=${this.sessionId}`,
+        cookie: `session=${sessionId}`,
       },
     };
 

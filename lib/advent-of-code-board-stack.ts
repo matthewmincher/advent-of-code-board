@@ -12,6 +12,7 @@ import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as path from "node:path";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as cm from "aws-cdk-lib/aws-certificatemanager";
+import { S3EventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 
 interface AdventOfCodeBoardStackProps extends cdk.StackProps {
   domainName: string;
@@ -32,6 +33,12 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     const projectRoot = path.resolve(__dirname, "../");
     const lambdaRoot = path.resolve(__dirname, "../src");
 
+    const distribution = this.setupDistribution(
+      webBucket,
+      props.domainName,
+      props.webCertificate,
+    );
+
     const secret = new secrets.Secret(this, "aoc-secrets", {
       secretName: "aoc/leaderboardchecker",
     });
@@ -43,15 +50,27 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     const leaderboardChecker = this.createLeaderboardCheckLambda(
       projectRoot,
       lambdaRoot,
-      webBucket,
       dataBucket,
       secret,
     );
 
     secret.grantRead(leaderboardChecker);
     dataBucket.grantPut(leaderboardChecker);
-    webBucket.grantPut(leaderboardChecker);
     leaderboardChecker.grantInvoke(leaderboardCheckRole);
+
+    const widgetRenderer = this.createWidgetRendererLambda(
+      projectRoot,
+      lambdaRoot,
+      webBucket,
+      dataBucket,
+      distribution,
+    );
+
+    dataBucket.grantRead(widgetRenderer);
+    webBucket.grantPut(widgetRenderer);
+    distribution.grantCreateInvalidation(widgetRenderer);
+
+    this.configureRenderEventForBucket(dataBucket, widgetRenderer);
 
     const schedule = new scheduler.Schedule(
       this,
@@ -70,8 +89,6 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
         timeWindow: scheduler.TimeWindow.off(),
       },
     );
-
-    this.setupDistribution(webBucket, props.domainName, props.webCertificate);
   }
 
   private createBucket(id: string): s3.Bucket {
@@ -103,7 +120,6 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
   private createLeaderboardCheckLambda(
     projectRoot: string,
     lambdaRoot: string,
-    webBucket: s3.Bucket,
     dataBucket: s3.Bucket,
     secret: secrets.Secret,
   ): nodejs.NodejsFunction {
@@ -129,27 +145,53 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
         AOC_EVENT_YEAR: process.env.AOC_EVENT_YEAR!,
         SECRET_ARN: secret.secretArn,
         S3_REGION: this.region,
-        S3_WEB_BUCKET_NAME: webBucket.bucketName,
         S3_DATA_BUCKET_NAME: dataBucket.bucketName,
       },
       retryAttempts: 0,
       timeout: cdk.Duration.seconds(30),
       logRetention: logs.RetentionDays.ONE_WEEK,
-      bundling: {
-        commandHooks: {
-          beforeBundling(inputDir: string, outputDir: string): string[] {
-            return [];
-          },
-          afterBundling(inputDir: string, outputDir: string): string[] {
-            return [
-              `cp -R ${inputDir}/src/check-leaderboard/assets ${outputDir}/assets`,
-            ];
-          },
-          beforeInstall(inputDir: string, outputDir: string): string[] {
-            return [];
-          },
-        },
-      },
     });
+  }
+
+  private createWidgetRendererLambda(
+    projectRoot: string,
+    lambdaRoot: string,
+    webBucket: s3.Bucket,
+    dataBucket: s3.Bucket,
+    cloudfrontDistribution: cloudfront.Distribution,
+  ): nodejs.NodejsFunction {
+    return new nodejs.NodejsFunction(this, "WidgetRenderer", {
+      functionName: "aoc-widget-renderer",
+      runtime: lambda.Runtime.NODEJS_20_X,
+      projectRoot: projectRoot,
+      entry: path.join(lambdaRoot, "render-widget", "index.ts"),
+      handler: "index.handler",
+      depsLockFilePath: path.join(projectRoot, "package-lock.json"),
+      environment: {
+        S3_REGION: this.region,
+        S3_WEB_BUCKET_NAME: webBucket.bucketName,
+        S3_DATA_BUCKET_NAME: dataBucket.bucketName,
+        CLOUDFRONT_DISTRIBUTION_ID: cloudfrontDistribution.distributionId,
+      },
+      retryAttempts: 0,
+      timeout: cdk.Duration.seconds(30),
+      logRetention: logs.RetentionDays.ONE_WEEK,
+    });
+  }
+
+  private configureRenderEventForBucket(
+    bucket: s3.Bucket,
+    renderer: nodejs.NodejsFunction,
+  ) {
+    const eventSource = new S3EventSource(bucket, {
+      events: [s3.EventType.OBJECT_CREATED_PUT],
+      filters: [
+        {
+          prefix: "latest.json",
+        },
+      ],
+    });
+
+    renderer.addEventSource(eventSource);
   }
 }

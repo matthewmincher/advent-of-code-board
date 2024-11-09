@@ -1,10 +1,3 @@
-import { Leaderboard } from "../types/AdventOfCodeLeaderboard";
-import {
-  PutObjectCommand,
-  PutObjectCommandInput,
-  S3Client,
-} from "@aws-sdk/client-s3";
-import { format } from "date-fns";
 import {
   GetSecretValueCommand,
   SecretsManagerClient,

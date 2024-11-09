@@ -1,4 +1,4 @@
-import { Leaderboard } from "../types/AdventOfCodeLeaderboard";
+import { Leaderboard } from "../../shared/types/AdventOfCodeLeaderboard";
 
 export default class AdventOfCodeLeaderboardService {
   async getLeaderboard(

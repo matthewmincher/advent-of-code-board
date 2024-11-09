@@ -1,15 +1,11 @@
 import AdventOfCodeLeaderboardService from "./services/AdventOfCodeLeaderboardService";
-import StorageService from "./services/StorageService";
-import WidgetService from "./services/WidgetService";
+
 import { Handler } from "aws-lambda";
-import * as path from "node:path";
 import SecretsService from "./services/SecretsService";
+import StorageService from "../shared/services/StorageService";
 
 const leaderboardService = new AdventOfCodeLeaderboardService();
 const storageService = new StorageService();
-const widgetService = new WidgetService(
-  path.join(__dirname, "assets", "widget.html"),
-);
 const secretsService = new SecretsService(process.env.SECRET_ARN);
 
 export const handler: Handler = async (event, context) => {
@@ -29,7 +25,4 @@ export const handler: Handler = async (event, context) => {
   console.log(`Retrieved leaderboard from API`);
 
   await storageService.storeLeaderboard(leaderboard);
-  await storageService.storeWebIndex(
-    widgetService.renderWidgetFromLeaderboard(leaderboard),
-  );
 };

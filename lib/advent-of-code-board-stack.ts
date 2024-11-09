@@ -110,7 +110,6 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
         origin:
           cloudfront_origins.S3BucketOrigin.withOriginAccessControl(bucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
       },
       domainNames: [domainName],
       certificate: certificate,

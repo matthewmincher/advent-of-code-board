@@ -12,5 +12,5 @@ export const handler: Handler = async (event, context) => {
   const widget = widgetService.renderWidgetFromLeaderboard(latestLeaderboard);
 
   await storageService.storeWebIndex(widget);
-  await cacheService.invalidate("index.html");
+  await cacheService.invalidate("/index.html");
 };

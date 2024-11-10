@@ -182,8 +182,8 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
       retryAttempts: 0,
     });
 
-    new scheduler.Schedule(this, "DailyLeaderboardCheckSchedule", {
-      scheduleName: "inactive-leaderboard-check",
+    new scheduler.Schedule(this, "InfrequentLeaderboardCheckSchedule", {
+      scheduleName: "infrequent-leaderboard-check",
       description:
         "Runs a lambda function in November & January to store a copy of the leaderboard",
       schedule: scheduler.ScheduleExpression.cron({
@@ -196,7 +196,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     });
 
     new scheduler.Schedule(this, "FrequentLeaderboardCheckSchedule", {
-      scheduleName: "active-leaderboard-check",
+      scheduleName: "frequent-leaderboard-check",
       description:
         "Runs a lambda function every 20 minutes in December to store a copy of the leaderboard",
       schedule: scheduler.ScheduleExpression.cron({

@@ -71,24 +71,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     distribution.grantCreateInvalidation(widgetRenderer);
 
     this.configureRenderEventForBucket(dataBucket, widgetRenderer);
-
-    const schedule = new scheduler.Schedule(
-      this,
-      "HourlyLeaderboardCheckSchedule",
-      {
-        scheduleName: "hourly-leaderboard-check",
-        description:
-          "Runs a lambda function every hour to store a copy of the leaderboard",
-        schedule: scheduler.ScheduleExpression.cron({
-          minute: "0",
-          month: "12",
-        }),
-        target: new scheduler_targets.LambdaInvoke(leaderboardChecker, {
-          retryAttempts: 0,
-        }),
-        timeWindow: scheduler.TimeWindow.off(),
-      },
-    );
+    this.configureScheduleForChecker(leaderboardChecker);
   }
 
   private createBucket(id: string): s3.Bucket {
@@ -192,5 +175,36 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
     });
 
     renderer.addEventSource(eventSource);
+  }
+
+  private configureScheduleForChecker(checker: nodejs.NodejsFunction) {
+    const scheduleTarget = new scheduler_targets.LambdaInvoke(checker, {
+      retryAttempts: 0,
+    });
+
+    new scheduler.Schedule(this, "DailyLeaderboardCheckSchedule", {
+      scheduleName: "inactive-leaderboard-check",
+      description:
+        "Runs a lambda function in November & January to store a copy of the leaderboard",
+      schedule: scheduler.ScheduleExpression.cron({
+        minute: "0",
+        hour: "9,12,5",
+        month: "11,1",
+      }),
+      target: scheduleTarget,
+      timeWindow: scheduler.TimeWindow.off(),
+    });
+
+    new scheduler.Schedule(this, "FrequentLeaderboardCheckSchedule", {
+      scheduleName: "active-leaderboard-check",
+      description:
+        "Runs a lambda function every 20 minutes in December to store a copy of the leaderboard",
+      schedule: scheduler.ScheduleExpression.cron({
+        minute: "*/20",
+        month: "12",
+      }),
+      target: scheduleTarget,
+      timeWindow: scheduler.TimeWindow.off(),
+    });
   }
 }

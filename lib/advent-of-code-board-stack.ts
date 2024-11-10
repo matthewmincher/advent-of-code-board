@@ -188,7 +188,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
         "Runs a lambda function in November & January to store a copy of the leaderboard",
       schedule: scheduler.ScheduleExpression.cron({
         minute: "0",
-        hour: "9,12,5",
+        hour: "9,12,17",
         month: "11,1",
       }),
       target: scheduleTarget,

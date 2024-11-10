@@ -1,5 +1,5 @@
 import { Leaderboard } from "../../shared/types/AdventOfCodeLeaderboard";
-import { ssr } from "../widget/ServerClient";
+import { ssr } from "../components/ServerClient";
 
 export default class WidgetService {
   constructor() {}

@@ -20,7 +20,8 @@
     "typeRoots": ["./node_modules/@types"],
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "jsx": "react"
+    "jsx": "react",
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "cdk.out"]
 }

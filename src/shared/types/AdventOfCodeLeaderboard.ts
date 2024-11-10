@@ -1,25 +1,23 @@
 type Id = string;
 type Timestamp = string;
 
-type CompletionDay = Map<Id, CompletionDayItem>;
-
 type CompletionDayItem = {
   star_index: number;
-  get_star_timestamp: Timestamp;
+  get_star_ts: Timestamp;
 };
 
-type LeaderboardMember = {
+export type LeaderboardMember = {
   id: Id;
   name: string;
   stars: number;
   last_star_ts: Timestamp;
   global_score: number;
   local_score: number;
-  completion_day_level: CompletionDay;
+  completion_day_level: { [key: Id]: { [key: Id]: CompletionDayItem } };
 };
 
 export type Leaderboard = {
   event: string;
   owner_id: Id;
-  members: Map<Id, LeaderboardMember>;
+  members: { [key: Id]: LeaderboardMember };
 };

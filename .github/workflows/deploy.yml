@@ -17,9 +17,9 @@ jobs:
       DOMAIN: ${{ vars.DOMAIN }}
     steps:
       - name: Check out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
@@ -31,6 +31,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: "eu-west-2"
-          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       - name: Deploy
         run: cdk deploy --all --require-approval never

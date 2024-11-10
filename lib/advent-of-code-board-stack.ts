@@ -132,6 +132,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
       retryAttempts: 0,
       timeout: cdk.Duration.seconds(30),
       logRetention: logs.RetentionDays.ONE_WEEK,
+      memorySize: 512,
     });
   }
 
@@ -158,6 +159,7 @@ export class AdventOfCodeBoardStack extends cdk.Stack {
       retryAttempts: 0,
       timeout: cdk.Duration.seconds(30),
       logRetention: logs.RetentionDays.ONE_WEEK,
+      memorySize: 512,
     });
   }
 

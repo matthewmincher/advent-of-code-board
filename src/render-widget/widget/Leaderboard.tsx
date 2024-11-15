@@ -62,7 +62,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ state }) => {
             flexDirection: "column",
             alignContent: "start",
             minWidth: 150,
-            maxWidth: 150,
+            maxWidth: 185,
             overflow: "hidden",
           }}
         >
@@ -76,7 +76,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ state }) => {
             overflowY: "scroll",
             scrollbarWidth: "none",
             paddingBottom: 15,
-            width: 190,
+            minWidth: 190,
+            maxWidth: 220
           }}
         >
           <div
@@ -96,6 +97,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ state }) => {
             scrollbarWidth: "none",
             paddingBottom: 15,
             width: 220,
+            flexGrow: 1,
+            maxWidth: 270
           }}
         >
           <div

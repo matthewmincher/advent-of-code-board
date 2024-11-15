@@ -22,6 +22,7 @@ export const ssr = (leaderboard: Leaderboard): string => {
         display: "flex",
         flexDirection: "column",
         position: "relative",
+        maxHeight: "100%"
       }}
     >
       <h2

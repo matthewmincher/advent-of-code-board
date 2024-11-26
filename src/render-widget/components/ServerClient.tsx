@@ -3,9 +3,18 @@ import * as React from "react";
 import * as ReactDOMServer from "react-dom/server";
 import LeaderboardElement from "../widget/Leaderboard";
 import styled from "@emotion/styled";
+import { formatDistanceToNowStrict } from "date-fns";
 
 export const ssr = (leaderboard: Leaderboard): string => {
   const Div = styled.div``;
+
+  const now = new Date();
+  const start = new Date(parseInt(leaderboard.event), 11, 1)
+
+  let difference = undefined;
+  if (now < start) {
+    difference = formatDistanceToNowStrict(start)
+  }
 
   return ReactDOMServer.renderToStaticMarkup(
     <Div
@@ -38,6 +47,14 @@ export const ssr = (leaderboard: Leaderboard): string => {
         Advent of Code
       </h2>
       <LeaderboardElement state={leaderboard} />
+
+      {!!difference && (
+        <div style={{
+          position: 'absolute',
+          top: 15,
+          left: 15
+        }}>{difference} to go ...</div>
+      )}
     </Div>,
   );
 };

@@ -9,7 +9,7 @@ export const ssr = (leaderboard: Leaderboard): string => {
   const Div = styled.div``;
 
   const now = new Date();
-  const start = new Date(parseInt(leaderboard.event), 11, 1)
+  const start = new Date(parseInt(leaderboard.event), 11, 1, 4)
 
   let difference = undefined;
   if (now < start) {

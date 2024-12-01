@@ -11,7 +11,7 @@ type RecentStar = {
   name: string;
   day: string;
   stars: number;
-  lastStarTs: string;
+  ts: string;
 };
 
 const getRecentStarsFromMembers = (
@@ -22,24 +22,22 @@ const getRecentStarsFromMembers = (
       for (const [day, completion] of Object.entries(
         member.completion_day_level,
       )) {
-        accumulator.push({
-          name: member.name,
-          day: day,
-          stars: Object.keys(completion).length,
-          lastStarTs: Object.values(completion).reduce((max, completion) => {
-            if (completion.get_star_ts > max) {
-              return completion.get_star_ts;
-            }
+        for(const star in completion) {
+          const award = completion[star];
 
-            return max;
-          }, "0"),
-        });
+          accumulator.push({
+            name: member.name,
+            day: day,
+            stars: Number(star),
+            ts: award.get_star_ts,
+          });
+        }
       }
 
       return accumulator;
     }, [] as RecentStar[])
-    .sort((a, b) => Number(b.lastStarTs) - Number(a.lastStarTs))
-    .slice(0, 18);
+    .sort((a, b) => Number(b.ts) - Number(a.ts))
+    .slice(0, 20);
 };
 
 const getStarForCount = (count: number, day: string) => {

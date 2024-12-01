@@ -3,7 +3,6 @@ import {
   Leaderboard,
   LeaderboardMember,
 } from "../../shared/types/AdventOfCodeLeaderboard";
-import { Star } from "@mui/icons-material";
 import LatestStar from "./LatestStar";
 import TotalStars from "./TotalStars";
 import ParticipantCount from "./ParticipantCount";
@@ -33,13 +32,18 @@ const getLatestStar = (leaderboard: Leaderboard) => {
   );
 };
 
+
 const Leaderboard: React.FC<LeaderboardProps> = ({ state }) => {
   const totalStars = getTotalStars(state);
   const latestStar = getLatestStar(state);
   const participantCount = Object.keys(state.members).length;
   const members = Object.values(state.members).sort((a, b) => {
     if (b.stars == a.stars) {
-      return Number(b.id) - Number(a.id);
+      if (b.last_star_ts == a.last_star_ts) {
+        return Number(a.id) - Number(b.id);
+      }
+
+      return Number(b.last_star_ts) - Number(a.last_star_ts);
     }
 
     return b.stars - a.stars;

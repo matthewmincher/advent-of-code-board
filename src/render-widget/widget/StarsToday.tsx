@@ -44,7 +44,6 @@ const getStarForCount = (count: number, day: string) => {
   return (
     <span
       style={{
-        fontSize: "small",
         backgroundColor: count > 1 ? amber[900] : grey[800],
         borderRadius: 5,
         color: count > 1 ? amber[100] : grey[300],
@@ -94,6 +93,9 @@ const StarsToday: React.FC<StarsTodayProps> = ({ members }) => {
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
+            fontSize: "80%",
+            height: "25px",
+            lineHeight: "25px"
           }}
         >
           {getStarForCount(member.stars, member.day)}

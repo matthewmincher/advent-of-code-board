@@ -43,7 +43,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ state }) => {
         return Number(a.id) - Number(b.id);
       }
 
-      return Number(b.last_star_ts) - Number(a.last_star_ts);
+      return Number(a.last_star_ts) - Number(b.last_star_ts);
     }
 
     return b.stars - a.stars;

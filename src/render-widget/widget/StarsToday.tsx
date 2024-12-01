@@ -39,7 +39,7 @@ const getRecentStarsFromMembers = (
       return accumulator;
     }, [] as RecentStar[])
     .sort((a, b) => Number(b.lastStarTs) - Number(a.lastStarTs))
-    .slice(0, 5);
+    .slice(0, 18);
 };
 
 const getStarForCount = (count: number, day: string) => {

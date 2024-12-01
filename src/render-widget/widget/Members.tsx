@@ -16,10 +16,6 @@ const Members: React.FC<MembersProps> = ({ members }) => {
         alignItems: "center",
       }}
     >
-      <span style={{ fontFamily: "monospace", whiteSpace: "pre" }}>
-        {padStart(`#${i}`, 3, " ")}
-      </span>
-      <span style={{ whiteSpace: "pre" }}> - </span>
       <Star fontSize="small" />
       <span
         style={{

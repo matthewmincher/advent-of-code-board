@@ -49,21 +49,18 @@ const getStarForCount = (count: number, day: string) => {
         color: count > 1 ? amber[100] : grey[300],
         marginRight: 5,
         display: "inline-block",
-        verticalAlign: "middle",
       }}
     >
       <Star
-        fontSize="small"
-        style={{}}
+        fontSize="inherit"
         sx={{ color: count > 1 ? amber[500] : grey[500] }}
       />
       <span
         style={{
-          verticalAlign: "middle",
           paddingRight: 5,
         }}
       >
-        {day}
+        {day}.{count}
       </span>
     </span>
   );
@@ -91,9 +88,7 @@ const StarsToday: React.FC<StarsTodayProps> = ({ members }) => {
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            fontSize: "13px",
-            height: "25px",
-            lineHeight: "25px"
+            fontSize: "15px"
           }}
         >
           {getStarForCount(member.stars, member.day)}
